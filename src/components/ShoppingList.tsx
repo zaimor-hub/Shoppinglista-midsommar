@@ -145,9 +145,11 @@ export default function ShoppingList() {
     return acc;
   }, {});
 
-  const sortedCategories = Object.keys(grouped).sort((a, b) =>
-    a.localeCompare(b, "sv")
-  );
+  const sortedCategories = Object.keys(grouped).sort((a, b) => {
+    const ia = CATEGORIES.indexOf(a);
+    const ib = CATEGORIES.indexOf(b);
+    return (ia === -1 ? CATEGORIES.length : ia) - (ib === -1 ? CATEGORIES.length : ib);
+  });
 
   const uncheckedCount = items.filter((i) => !i.checked).length;
 
