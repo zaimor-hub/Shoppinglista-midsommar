@@ -37,6 +37,8 @@ function getCategoryColor(category: string): string {
   return CATEGORY_COLORS[category] ?? "bg-gray-100 text-gray-800";
 }
 
+type EditState = { name: string; category: string };
+
 export default function ShoppingList() {
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,6 +48,9 @@ export default function ShoppingList() {
   const [category, setCategory] = useState("Lunch mat");
   const [quantity, setQuantity] = useState("1");
   const [adding, setAdding] = useState(false);
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editState, setEditState] = useState<EditState>({ name: "", category: "" });
 
   const fetchItems = useCallback(async () => {
     const { data, error } = await supabase
@@ -109,6 +114,25 @@ export default function ShoppingList() {
 
   async function deleteItem(id: string) {
     await supabase.from("shopping_items").delete().eq("id", id);
+  }
+
+  function startEdit(item: ShoppingItem) {
+    setEditingId(item.id);
+    setEditState({ name: item.name, category: item.category });
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditState({ name: "", category: "" });
+  }
+
+  async function saveEdit(id: string) {
+    if (!editState.name.trim()) return;
+    await supabase
+      .from("shopping_items")
+      .update({ name: editState.name.trim(), category: editState.category })
+      .eq("id", id);
+    setEditingId(null);
   }
 
   const grouped = items.reduce<Record<string, ShoppingItem[]>>((acc, item) => {
@@ -208,47 +232,96 @@ export default function ShoppingList() {
           </div>
           <ul className="divide-y divide-gray-50">
             {grouped[cat].map((item) => (
-              <li
-                key={item.id}
-                className="flex items-center gap-3 px-4 py-3"
-              >
-                <button
-                  onClick={() => toggleChecked(item)}
-                  className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-                    item.checked
-                      ? "bg-green-500 border-green-500 text-white"
-                      : "border-gray-300 hover:border-green-400"
-                  }`}
-                  aria-label={item.checked ? "Avmarkera" : "Markera som handlad"}
-                >
-                  {item.checked && (
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                </button>
+              <li key={item.id} className="px-4 py-3">
+                {editingId === item.id ? (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={editState.name}
+                      onChange={(e) => setEditState((s) => ({ ...s, name: e.target.value }))}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveEdit(item.id);
+                        if (e.key === "Escape") cancelEdit();
+                      }}
+                      autoFocus
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-green-400"
+                    />
+                    <select
+                      value={editState.category}
+                      onChange={(e) => setEditState((s) => ({ ...s, category: e.target.value }))}
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-base bg-white focus:outline-none focus:ring-2 focus:ring-green-400"
+                    >
+                      {CATEGORIES.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => saveEdit(item.id)}
+                        disabled={!editState.name.trim()}
+                        className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white font-semibold py-2 rounded-xl text-sm transition-colors"
+                      >
+                        Spara
+                      </button>
+                      <button
+                        onClick={cancelEdit}
+                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 rounded-xl text-sm transition-colors"
+                      >
+                        Avbryt
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => toggleChecked(item)}
+                      className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
+                        item.checked
+                          ? "bg-green-500 border-green-500 text-white"
+                          : "border-gray-300 hover:border-green-400"
+                      }`}
+                      aria-label={item.checked ? "Avmarkera" : "Markera som handlad"}
+                    >
+                      {item.checked && (
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </button>
 
-                <span
-                  className={`flex-1 text-base ${
-                    item.checked ? "line-through text-gray-400" : "text-gray-800"
-                  }`}
-                >
-                  {item.name}
-                </span>
+                    <span
+                      className={`flex-1 text-base ${
+                        item.checked ? "line-through text-gray-400" : "text-gray-800"
+                      }`}
+                    >
+                      {item.name}
+                    </span>
 
-                <span className="text-sm text-gray-400 flex-shrink-0">
-                  {item.quantity}
-                </span>
+                    <span className="text-sm text-gray-400 flex-shrink-0">
+                      {item.quantity}
+                    </span>
 
-                <button
-                  onClick={() => deleteItem(item.id)}
-                  className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors rounded-lg hover:bg-red-50"
-                  aria-label="Ta bort vara"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                    <button
+                      onClick={() => startEdit(item)}
+                      className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-blue-50"
+                      aria-label="Redigera vara"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+
+                    <button
+                      onClick={() => deleteItem(item.id)}
+                      className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors rounded-lg hover:bg-red-50"
+                      aria-label="Ta bort vara"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
               </li>
             ))}
           </ul>
