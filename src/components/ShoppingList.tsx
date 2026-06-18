@@ -276,10 +276,14 @@ export default function ShoppingList() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1">
+                  <div
+                    onClick={() => startEdit(item)}
+                    className="flex items-center gap-1 cursor-pointer active:opacity-60"
+                  >
                     <button
-                      onClick={() => toggleChecked(item)}
-                      className="flex-shrink-0 w-11 h-11 flex items-center justify-center active:opacity-60"
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); toggleChecked(item); }}
+                      className="flex-shrink-0 w-11 h-11 flex items-center justify-center"
                       aria-label={item.checked ? "Avmarkera" : "Markera som handlad"}
                     >
                       <span className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
@@ -295,21 +299,18 @@ export default function ShoppingList() {
                       </span>
                     </button>
 
-                    <button
-                      onClick={() => startEdit(item)}
-                      className="flex-1 flex items-center justify-between gap-2 py-2 text-left active:opacity-60 min-h-[44px]"
-                      aria-label={`Redigera ${item.name}`}
-                    >
+                    <div className="flex-1 flex items-center justify-between gap-2 min-h-[44px] py-1">
                       <span className={`text-base ${item.checked ? "line-through text-gray-400" : "text-gray-800"}`}>
                         {item.name}
                       </span>
                       <span className="text-sm text-gray-400 flex-shrink-0">
                         {item.quantity}
                       </span>
-                    </button>
+                    </div>
 
                     <button
-                      onClick={() => deleteItem(item.id)}
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); deleteItem(item.id); }}
                       className="flex-shrink-0 w-11 h-11 flex items-center justify-center text-gray-400 active:text-red-500 active:bg-red-50 transition-colors rounded-xl"
                       aria-label="Ta bort vara"
                     >
