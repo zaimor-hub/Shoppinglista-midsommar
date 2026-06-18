@@ -244,12 +244,12 @@ export default function ShoppingList() {
                         if (e.key === "Escape") cancelEdit();
                       }}
                       autoFocus
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-green-400"
+                      className="w-full border border-gray-200 rounded-xl px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-green-400"
                     />
                     <select
                       value={editState.category}
                       onChange={(e) => setEditState((s) => ({ ...s, category: e.target.value }))}
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-base bg-white focus:outline-none focus:ring-2 focus:ring-green-400"
+                      className="w-full border border-gray-200 rounded-xl px-3 py-3 text-base bg-white focus:outline-none focus:ring-2 focus:ring-green-400"
                     >
                       {CATEGORIES.map((c) => (
                         <option key={c} value={c}>{c}</option>
@@ -259,64 +259,66 @@ export default function ShoppingList() {
                       <button
                         onClick={() => saveEdit(item.id)}
                         disabled={!editState.name.trim()}
-                        className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white font-semibold py-2 rounded-xl text-sm transition-colors"
+                        className="flex-1 bg-green-600 active:bg-green-700 disabled:bg-green-300 text-white font-semibold py-3 rounded-xl text-base transition-colors"
                       >
                         Spara
                       </button>
                       <button
                         onClick={cancelEdit}
-                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 rounded-xl text-sm transition-colors"
+                        className="flex-1 bg-gray-100 active:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl text-base transition-colors"
                       >
                         Avbryt
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
                     <button
                       onClick={() => toggleChecked(item)}
-                      className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-                        item.checked
-                          ? "bg-green-500 border-green-500 text-white"
-                          : "border-gray-300 hover:border-green-400"
-                      }`}
+                      className="flex-shrink-0 w-11 h-11 flex items-center justify-center active:opacity-60"
                       aria-label={item.checked ? "Avmarkera" : "Markera som handlad"}
                     >
-                      {item.checked && (
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
+                      <span className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                        item.checked
+                          ? "bg-green-500 border-green-500 text-white"
+                          : "border-gray-300"
+                      }`}>
+                        {item.checked && (
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </span>
                     </button>
 
                     <span
-                      className={`flex-1 text-base ${
+                      className={`flex-1 text-base px-1 ${
                         item.checked ? "line-through text-gray-400" : "text-gray-800"
                       }`}
                     >
                       {item.name}
                     </span>
 
-                    <span className="text-sm text-gray-400 flex-shrink-0">
+                    <span className="text-sm text-gray-400 flex-shrink-0 px-1">
                       {item.quantity}
                     </span>
 
                     <button
                       onClick={() => startEdit(item)}
-                      className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-blue-50"
+                      className="flex-shrink-0 w-11 h-11 flex items-center justify-center text-gray-300 active:text-blue-400 active:bg-blue-50 transition-colors rounded-xl"
                       aria-label="Redigera vara"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                     </button>
 
                     <button
                       onClick={() => deleteItem(item.id)}
-                      className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors rounded-lg hover:bg-red-50"
+                      className="flex-shrink-0 w-11 h-11 flex items-center justify-center text-gray-300 active:text-red-400 active:bg-red-50 transition-colors rounded-xl"
                       aria-label="Ta bort vara"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
