@@ -4,23 +4,33 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase, type ShoppingItem } from "@/lib/supabase";
 
 const CATEGORIES = [
-  "Mat",
-  "Dryck",
-  "Grillat",
-  "Snacks & godis",
-  "Frukt & grönt",
-  "Dairy",
-  "Övrigt",
+  "Lunch mat",
+  "Lunch dryck",
+  "Lunch övrigt",
+  "Eftermiddagsfika mat",
+  "Eftermiddagsfika dryck",
+  "Eftermiddagsfika övrigt",
+  "Grill-middag mat",
+  "Grill-middag dryck",
+  "Grill-middag övrigt",
+  "Frukost",
+  "Snacks",
+  "Prylar",
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  "Mat": "bg-orange-100 text-orange-800",
-  "Dryck": "bg-blue-100 text-blue-800",
-  "Grillat": "bg-red-100 text-red-800",
-  "Snacks & godis": "bg-yellow-100 text-yellow-800",
-  "Frukt & grönt": "bg-green-100 text-green-800",
-  "Dairy": "bg-purple-100 text-purple-800",
-  "Övrigt": "bg-gray-100 text-gray-800",
+  "Lunch mat": "bg-orange-100 text-orange-800",
+  "Lunch dryck": "bg-blue-100 text-blue-800",
+  "Lunch övrigt": "bg-gray-100 text-gray-800",
+  "Eftermiddagsfika mat": "bg-amber-100 text-amber-800",
+  "Eftermiddagsfika dryck": "bg-cyan-100 text-cyan-800",
+  "Eftermiddagsfika övrigt": "bg-gray-100 text-gray-800",
+  "Grill-middag mat": "bg-red-100 text-red-800",
+  "Grill-middag dryck": "bg-indigo-100 text-indigo-800",
+  "Grill-middag övrigt": "bg-gray-100 text-gray-800",
+  "Frukost": "bg-green-100 text-green-800",
+  "Snacks": "bg-yellow-100 text-yellow-800",
+  "Prylar": "bg-purple-100 text-purple-800",
 };
 
 function getCategoryColor(category: string): string {
@@ -33,7 +43,7 @@ export default function ShoppingList() {
   const [error, setError] = useState<string | null>(null);
 
   const [name, setName] = useState("");
-  const [category, setCategory] = useState("Övrigt");
+  const [category, setCategory] = useState("Lunch mat");
   const [quantity, setQuantity] = useState("1");
   const [adding, setAdding] = useState(false);
 
