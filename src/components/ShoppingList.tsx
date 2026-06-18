@@ -128,10 +128,14 @@ export default function ShoppingList() {
 
   async function saveEdit(id: string) {
     if (!editState.name.trim()) return;
-    await supabase
+    const { error } = await supabase
       .from("shopping_items")
       .update({ name: editState.name.trim(), category: editState.category })
       .eq("id", id);
+    if (error) {
+      setError("Kunde inte spara ändringen.");
+      return;
+    }
     setEditingId(null);
   }
 
@@ -291,31 +295,22 @@ export default function ShoppingList() {
                       </span>
                     </button>
 
-                    <span
-                      className={`flex-1 text-base px-1 ${
-                        item.checked ? "line-through text-gray-400" : "text-gray-800"
-                      }`}
-                    >
-                      {item.name}
-                    </span>
-
-                    <span className="text-sm text-gray-400 flex-shrink-0 px-1">
-                      {item.quantity}
-                    </span>
-
                     <button
                       onClick={() => startEdit(item)}
-                      className="flex-shrink-0 w-11 h-11 flex items-center justify-center text-gray-300 active:text-blue-400 active:bg-blue-50 transition-colors rounded-xl"
-                      aria-label="Redigera vara"
+                      className="flex-1 flex items-center justify-between gap-2 py-2 text-left active:opacity-60 min-h-[44px]"
+                      aria-label={`Redigera ${item.name}`}
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
+                      <span className={`text-base ${item.checked ? "line-through text-gray-400" : "text-gray-800"}`}>
+                        {item.name}
+                      </span>
+                      <span className="text-sm text-gray-400 flex-shrink-0">
+                        {item.quantity}
+                      </span>
                     </button>
 
                     <button
                       onClick={() => deleteItem(item.id)}
-                      className="flex-shrink-0 w-11 h-11 flex items-center justify-center text-gray-300 active:text-red-400 active:bg-red-50 transition-colors rounded-xl"
+                      className="flex-shrink-0 w-11 h-11 flex items-center justify-center text-gray-400 active:text-red-500 active:bg-red-50 transition-colors rounded-xl"
                       aria-label="Ta bort vara"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
