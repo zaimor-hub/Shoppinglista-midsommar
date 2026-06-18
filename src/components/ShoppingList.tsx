@@ -261,6 +261,7 @@ export default function ShoppingList() {
                     </select>
                     <div className="flex gap-2">
                       <button
+                        type="button"
                         onClick={() => saveEdit(item.id)}
                         disabled={!editState.name.trim()}
                         className="flex-1 bg-green-600 active:bg-green-700 disabled:bg-green-300 text-white font-semibold py-3 rounded-xl text-base transition-colors"
@@ -268,6 +269,7 @@ export default function ShoppingList() {
                         Spara
                       </button>
                       <button
+                        type="button"
                         onClick={cancelEdit}
                         className="flex-1 bg-gray-100 active:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl text-base transition-colors"
                       >
@@ -276,14 +278,11 @@ export default function ShoppingList() {
                     </div>
                   </div>
                 ) : (
-                  <div
-                    onClick={() => startEdit(item)}
-                    className="flex items-center gap-1 cursor-pointer active:opacity-60"
-                  >
+                  <div className="flex items-center">
                     <button
                       type="button"
-                      onClick={(e) => { e.stopPropagation(); toggleChecked(item); }}
-                      className="flex-shrink-0 w-11 h-11 flex items-center justify-center"
+                      onClick={() => toggleChecked(item)}
+                      className="flex-shrink-0 w-11 h-11 flex items-center justify-center active:opacity-60"
                       aria-label={item.checked ? "Avmarkera" : "Markera som handlad"}
                     >
                       <span className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
@@ -299,18 +298,22 @@ export default function ShoppingList() {
                       </span>
                     </button>
 
-                    <div className="flex-1 flex items-center justify-between gap-2 min-h-[44px] py-1">
+                    <button
+                      type="button"
+                      onClick={() => startEdit(item)}
+                      className="flex-1 flex items-center justify-between gap-2 min-h-[44px] px-2 text-left active:opacity-60"
+                    >
                       <span className={`text-base ${item.checked ? "line-through text-gray-400" : "text-gray-800"}`}>
                         {item.name}
                       </span>
                       <span className="text-sm text-gray-400 flex-shrink-0">
                         {item.quantity}
                       </span>
-                    </div>
+                    </button>
 
                     <button
                       type="button"
-                      onClick={(e) => { e.stopPropagation(); deleteItem(item.id); }}
+                      onClick={() => deleteItem(item.id)}
                       className="flex-shrink-0 w-11 h-11 flex items-center justify-center text-gray-400 active:text-red-500 active:bg-red-50 transition-colors rounded-xl"
                       aria-label="Ta bort vara"
                     >
